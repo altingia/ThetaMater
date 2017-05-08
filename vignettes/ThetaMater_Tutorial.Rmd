@@ -280,7 +280,7 @@ Failure to account for among-locus rate variation can affect parameter estimates
 shape = 2
 scale = 0.001
 
-example.MCMC.M1.M2 <- ThetaMater.M1(k.vec = example.M2.data$k.vec, l.vec = example.M2.data$l.vec, n.vec = example.M2.data$n.vec, c.vec = example.M2.data$c.vec, theta.shape = shape, theta.scale = scale, ngens = 1000000, burnin = 100000, thin = 100)
+example.MCMC.M1.M2 <- ThetaMater.M1(k.vec = example.M2.dat$k.vec, l.vec = example.M2.dat$l.vec, n.vec = example.M2.dat$n.vec, c.vec = example.M2.dat$c.vec, theta.shape = shape, theta.scale = scale, ngens = 1000000, burnin = 100000, thin = 100)
 ```
 The results from this 'model-misspecification' analysis are shown below:
 ```{r eval = T}

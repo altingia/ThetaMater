@@ -341,6 +341,10 @@ example.M2.dat$c.vec # number of observations
 
 Let's run these analysis using the command below:
 ```{r eval = FALSE}
+theta.shape = 2
+theta.scale = 0.001
+alpha.shape = 5
+alpha.scale = 0.01
 example.MCMC.M3 <- ThetaMater.M3(k.vec = example.M2.dat$k.vec, l.vec = example.M2.dat$l.vec, n.vec = example.M2.dat$n.vec, c.vec = example.M2.dat$c.vec, K = 4, ngens = 1000000, burnin = 100000, thin = 10, theta.shape = theta.shape, theta.scale = theta.scale, alpha.shape = alpha.shape, alpha.scale = alpha.scale)
 
 ```

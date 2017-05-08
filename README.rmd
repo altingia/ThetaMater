@@ -1,4 +1,4 @@
-# ThetaMater: Bayesian estimation of theta and the shape parameter alpha of among-locus rate variation in genomic data
+# ThetaMater: Rapid and scalable Bayesian estimation of theta from diverse genetic data
 **NOTE See the file https://github.com/radamsRHA/ThetaMater/tree/master/vignettes for detailed instructions**
 
 Steps for Bayesian estimation of theta and alpha (see tutorial for more details)

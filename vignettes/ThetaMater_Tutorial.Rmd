@@ -47,6 +47,9 @@ As estimates from any one locus entail significant uncertainity, ThetaMater allo
 
 ## Step 1: install R package ThetaMater from github
 
+*** IMPORTANT: ThetaMater was written using R.3.3.3. We recommend using this version of R to ensure that the underlying c++ functions will operate correctly (this version of Rcpp works best with R.3.3.3). If you discover memory errors when attempting to run ThetaMater, please reinstall R.3.3.3 and this should correct any issues. Contact the author (radams@uta.edu) if any memory errors associated with c++ and Rcpp arise when using ThetaMater. R version 3.3.3 can be download here: https://cran.r-project.org/bin/macosx/ ***
+
+
 The R package ThetaMater is freely available to download and distribute from github <https://github.com/radamsRHA/ThetaMater/>. To install and load ThetaMater, you must first install the R packages `devtools`, `MCMCpack`, `phangorn`and `ape`.
 
 ```{r eval = FALSE}

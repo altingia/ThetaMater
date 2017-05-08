@@ -297,7 +297,7 @@ So, let's use `ThetaMater.M2` to infer the posterior distribution of $\theta$ gi
 shape = 2
 scale = 0.001
 
-example.MCMC.M2 <- ThetaMater.M2(k.vec = example.M2.data$k.vec, l.vec = example.M2.data$l.vec, n.vec = example.M2.data$n.vec, c.vec = example.M2.data$c.vec, theta.shape = shape, theta.scale = scale, ngens = 1000000, burnin = 100000, thin = 100, K = 4, alpha.param = 0.1)
+example.MCMC.M2 <- ThetaMater.M2(k.vec = example.M2.dat$k.vec, l.vec = example.M2.dat$l.vec, n.vec = example.M2.dat$n.vec, c.vec = example.M2.dat$c.vec, theta.shape = shape, theta.scale = scale, ngens = 1000000, burnin = 100000, thin = 100, K = 4, alpha.param = 0.1)
 ```
 
 And here are the results from this analysis:

@@ -11,7 +11,7 @@ Steps for Bayesian estimation of theta and alpha (see tutorial for more details)
 
 ## Installing R package GppFst from github
 
-The R package ThetaMater is freely available to download and distribute from github <https://github.com/radamsRHA/ThetaMater/>. To install and load ThetaMater, you must first install the R packages `devtools`, `MCMCpack`, and `XXX`.
+The R package ThetaMater is freely available to download and distribute from github <https://github.com/radamsRHA/ThetaMater/>. To install and load ThetaMater, you must first install the R packages `devtools`, and `MCMCpack`.
 
 ```
 install.packages("devtools")

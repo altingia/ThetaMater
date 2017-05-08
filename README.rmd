@@ -1,12 +1,12 @@
 # ThetaMater: Bayesian estimation of theta and the shape parameter alpha of among-locus rate variation in genomic data
-**NOTE See the file XXX for detailed instructions**
+**NOTE See the file https://github.com/radamsRHA/ThetaMater/tree/master/vignettes for detailed instructions**
 
 Steps for Bayesian estimation of theta and alpha (see tutorial for more details)
 
 1. Read input files and convert to infinite-sites data used by ThetaMater 
-2. Choose a specific Bayesian model for estimating theta along (M1), theta with a fixed alpha shape parameter (M2), or the joint posterior distribution of theta and alpha
-3. (Optional) Convert the results of ThetaMater into estimates of effective population size by multiplying the posterior distribution of theta by a given mutation rate (i.e., 10^-9)
-4. (Optional) Filter out loci with high mutation counts that likely represent spurious loci using the posterior predictive simulator function (XXX)
+2. Choose a specific Bayesian model for estimating theta along (`ThetaMater.M1`), theta with a fixed alpha shape parameter (`ThetaMater.M2`), or the joint posterior distribution of theta and alpha (`ThetaMater.M3`).
+3. (Optional) Convert the results of ThetaMater into estimates of effective population size by multiplying the posterior distribution of theta by a given mutation rate.
+4. (Optional) Filter out loci with high mutation counts that likely represent spurious loci using the posterior predictive simulator function (`ThetaMater.PPS`).
 5. (Optional) Identifying the maximum bounds of mutation counts from the posterior distribution, remove loci with outlier mutation counts that are too high beyond the posterior distribution, and re-estimate Theta using filtered dataset
 
 ## Installing R package GppFst from github

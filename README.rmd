@@ -27,6 +27,6 @@ library(MCMCpack) # Load dependancy phybase
 ```
 
 
-To begin using `ThetaMater` try using our vignette with example files provided with this package. See the directory ./ThetaMater_Tutorial/ for example files and tutorial. 
+To begin using `ThetaMater` try using our vignette with example files provided with this package. 
 
 

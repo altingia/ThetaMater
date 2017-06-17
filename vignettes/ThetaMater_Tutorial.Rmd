@@ -207,6 +207,7 @@ data(example.dat,package= "ThetaMater")
 
 example.MCMC <- ThetaMater.M1(k.vec = example.dat$k.vec, l.vec = example.dat$l.vec, n.vec = example.dat$n.vec, c.vec = example.dat$c.vec, ngens = 50, burnin = 1, theta.shape = shape, theta.scale = scale, thin = 2)
 ```
+*** IMPORTANT: ThetaMater was written using R.3.3.3. We recommend using this version of R to ensure that the underlying c++ functions will operate correctly (this version of Rcpp works best with R.3.3.3). If you discover memory errors (Rstudio unexpectedly closeles, segmental fault errors, etc.) when attempting to run ThetaMater, please reinstall R.3.3.3 and this should correct any issues. Contact the author (radams@uta.edu) if any memory errors associated with c++ and Rcpp arise when using ThetaMater. R version 3.3.3 can be download here: https://cran.r-project.org/bin/macosx/. These packages will be updated in the future for further support in updated R versions. ***
 
 We didn't run the mcmc very long, and thus the MCMC output does not appear at stationarity. See trace and density plot of the posterior below: 
 

@@ -3,9 +3,9 @@ title: 'ThetaMater: Rapid and scalable Bayesian estimation of theta from genomic
 author: "Rich Adams, Drew Schield, Daren Card, Andrew Corbin, and Todd Castoe"
 date: 'last updated: `r Sys.Date()`'
 output:
-  pdf_document:
-    toc: yes
   html_document:
+    toc: yes
+  pdf_document:
     toc: yes
   word_document:
     toc: yes
@@ -18,13 +18,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## The population size parameter *$\theta=4N_e\mu$* 
-The population size parameter *$\theta=4N_e\mu$* reflects the effects of genetic drift and mutation on patterns of genetic variation within a diploid population (*$\theta=2N_e\mu$*for a haploid population) with an effective size of $N_e$ individuals and a mutation rate of $\mu$ per site per generation. If two homologous sequences are sampled at random from a population, $\theta$ describes the expected number of mutations between these two sequences. $\theta$ is a fundamental measure of genetic diversity in populations and is thus an informative parameter used in many population genetic models. The R package ThetaMater provides a Bayesian framework to estimate both $\theta$ and $\alpha$ (shape of among-locus rate variation) parameters from a variety of genetic datasets, including haploid or diploid genomic data from single or multiple individuals, reduced-representation genomic data (e.g., RADseq, sequence capture), and single or multilocus Sanger sequence data (and variations of these datasets). ThetaMater implements three different functions that can be used to estimate these parameters within a Bayesian framework:  
+The population size parameter *$\theta=4N_e\mu$* reflects the effects of genetic drift and mutation on patterns of genetic variation within a diploid population (*$\theta=2N_e\mu$*for a haploid population) with an effective size of $N_e$ individuals and a mutation rate of $\mu$ per site per generation. If two homologous sequences are sampled at random from a population, $\theta$ describes the expected number of segregating sites observed between these two sequences. $\theta$ is a fundamental measure of genetic diversity in populations and is thus an informative parameter used in many population genetic models. The R package ThetaMater provides a Bayesian framework to estimate both $\theta$ and $\alpha$ (shape of among-locus rate variation) parameters from a variety of genetic datasets, including haploid or diploid genomic data from single or multiple individuals, reduced-representation genomic data (e.g., RADseq, sequence capture), and single or multilocus Sanger sequence data (and variations of these datasets). ThetaMater implements three different functions that can be used to estimate these parameters within a Bayesian framework:  
  * `ThetaMater.M1`: estimate $\theta$ without among-locus variation  
  * `ThetaMater.M2`: estimate $\theta$ with a fixed $\alpha$ parameter of rate variation and a user-defined number of locus rate classes  
  * `ThetaMater.M3`: estimate both $\theta$ and the shape parameter $\alpha$ and a user-defined number of rate classes  
 
 ## The likelihood function implemented by ThetaMater
-The three functions (`ThetaMater.M1`, `ThetaMater.M2`, `ThetaMater.M3`) simulate posterior distributions of  and/or  parameters for a given dataset. These functions employ the likelihood function  ($P(S = k|l, n; \theta)$) to compute the probability of observing *k* mutations in a sample size of *n* from a locus with length *l*. These methods compute the likelihood of a given dataset as a summation of the log-likelihood probabilities across all loci, each with respective lengths, mutation counts, and sample sizes. See the following publications for more information about this model, its derivation, applications, and similar models:  
+The three functions (`ThetaMater.M1`, `ThetaMater.M2`, `ThetaMater.M3`) simulate posterior distributions of  and/or  parameters for a given dataset. These functions employ the likelihood function  ($P(S = k|l, n; \theta)$) to compute the probability of observing *k* segregating sites in a sample size of *n* from a locus with length *l*. These methods compute the likelihood of a given dataset as a summation of the log-likelihood probabilities across all loci, each with respective lengths, number of segregating sites, and sample sizes. See the following publications for more information about this model, its derivation, applications, and similar models:  
 * Tavaré, Simon. "Line-of-descent and genealogical processes, and their applications in population genetics models." Theoretical population biology 26.2 (1984): 119-164.  
 * Watterson,G.A. (1975) On the number of segregating sites in genetical models without recombination. Theor. Popul. Biol.  
 * Wakeley, John. "Coalescent theory." Roberts & Company (2009).  
@@ -36,19 +36,19 @@ The three functions (`ThetaMater.M1`, `ThetaMater.M2`, `ThetaMater.M3`) simulate
 
 Below is the formula for the likelihood function described in these papers that is central to the three ThetaMater functions:   
 $P(S = k|l, n; \theta) = \int_0^{\infty}P(S=k|t)f_T(t)dt$  
-$P(S = k|l, n; \theta) = (l\theta/2)\sum_{i=2}^n(-1)^i choose(n-1,i-1) (i-1)/2 \int_0^{\infty}(t^k e^(-l\theta-1)/2/k! dt)$  
-$P(S = k|l, n; \theta) = (l\theta/2)^k \sum_{i=2}^n (-1)^i choose(n-1, i-1)(i-1)/2  (2/(l\theta+i-1)^(k+1)$  
-$P(S = k|l, n; \theta) = \sum_{i=2}^n (-1)^i choose(n-1,i-1) ((i-1)/(l\theta+i-1)) ((l\theta)/(l\theta+i-1))^k$  
+$P(S = k|l, n; \theta) = (\frac{l\theta}{2})^k\ \sum_{i=2}^n(-1)^i\ \binom{n-1}{i-1} \frac{i-1}{2} \ \int_0^{\infty}\ \frac{(t^k\ exp\{\frac{(-\theta+i-1)t}{2})}{k!}\ dt$  
+$P(S = k|l, n; \theta) = (\frac{l\theta}{2})^k\ \sum_{i=2}^n\ (-1)^i\ \binom{n-1}{i-1}\ \frac{i-1}{2}\  (\frac{2}{\theta+i-1})^(\ ^k\ ^+\ ^1\ ^)$  
+$P(S = k|l, n; \theta) = \sum_{i=2}^n\ (-1)^i\ \binom{n-1}{i-1}\ \frac{i-1}{\theta+i-1}\ (\frac{\theta}{\theta+i-1})^k$  
 
-For a dataset consisting of $x$ loci, each with mutation count $k_i$, number of bases $l_i$, and number of sequences sampled $n_i$, we can sum the likelihoods of the individual loci to get the likelihood of the entire dataset under a given value of $\theta$:  
+For a dataset consisting of $x$ loci, each an observed number of segregating sites $k_i$, number of bases $l_i$, and number of sequences sampled $n_i$, we can sum the likelihoods of the individual loci to get the likelihood of the entire dataset under a given value of $\theta$:  
 $L(D|\theta) = \sum_{i=1}^x log(P(S = k_i|l_i, n_i; \theta)$  
 
 
 ## Applications, Assumptions, and Limitations of ThetaMater
 
-Understanding the assumptions of ThetaMater and the underlying coalescent model are critical to the appropriate use of ThetaMater. Importantly, it is assumed that there is no recombination within individual loci and free recombination between loci (i.e., no linkage). Furthermore, all loci are assumed to have evolved under strictly neutral evolution. These are fundamental assumptions of the coalescent model and the likelihood function implemented in ThetaMater. This can been seen in the form of the likelihood equation provided above: the likelihood of an entire dataset is a summation of the log-likelihoods across loci that are assumed to be genetically unlinked. In other words, the genealogy and number of mutations at each locus is assumed to be independently and identically distributed (i.i.d). 
+Understanding the assumptions of ThetaMater and the underlying coalescent model are critical to the appropriate use of ThetaMater. Importantly, it is assumed that there is no recombination within individual loci and free recombination between loci (i.e., no linkage). Furthermore, all loci are assumed to have evolved under strictly neutral evolution. These are fundamental assumptions of the coalescent model and the likelihood function implemented in ThetaMater. This can been seen in the form of the likelihood equation provided above: the likelihood of an entire dataset is a summation of the log-likelihoods across loci that are assumed to be genetically unlinked. In other words, the genealogy and number of segregating sites observed at each locus is assumed to be independently and identically distributed (i.i.d). 
 
-To explore the potential effects of one such model violation (unrecognized recombination) in datasets, we simulated loci using the software *msprime* under 6 different recombination rates: (2e-9, 2e-8, 2e-7, 2e-6, 2e-5, 2e-4), using a sample size of 5 gene copies per 10kb locus, and with each dataset consisting of 10k loci. See Step 8: "Recombination & ThetaMater" for a plot of these analyses for each recombination rate and a dataset without recombination. In general, ThetaMater appears largely unaffected by recombination, as the posterior distribution of each analysis is peaked at the true simulation value ($\theta$ = 0.008). Nonetheless, these are complex subjects, and we recommend users to explore all potential violations of the model (including selection and recombination/linkage) prior to using ThetaMater
+To explore the potential effects of one such model violation (unrecognized recombination) in datasets, we simulated loci using the software *msprime* under 6 different recombination rates: (2e-9, 2e-8, 2e-7, 2e-6, 2e-5, 2e-4), using a sample size of 5 gene copies per 10kb locus, and with each dataset consisting of 10k loci. See Step 8: "Recombination & ThetaMater" for a plot of these analyses for each recombination rate and a dataset without recombination. In general, ThetaMater appears largely unaffected by recombination, as the posterior distribution of each analysis is peaked at the true simulation value ($\theta$ = 0.008). ThetaMater assumes that all loci are genetically unlinked, and at the request of a reviewer, we conducted a simulation of human chromosome 1 to evaluate the effects of linkage on ThetaMater estimates (See Step 9: "Linkage & ThetaMater"). Under extreme scenarios of linkeage, ThetaMater appeared to be biased towards larger values, but for more realistic conditions, ThetaMater appears to be robust to linkage. Nonetheless, these are complex subjects, and we recommend users to explore all potential violations of the model (including selection and recombination/linkage) prior to using ThetaMater
 
 As estimates from any one locus entail significant uncertainity, ThetaMater allows researchers to take full advantage of large, genomic datasets when estimating $\theta$ and provides a distribution of plausible values while accounting for uncertainty. Users can also use an estimate of the shape of among-locus rate variation (ThetaMater.M1) or estimate the shape of among-locus rate variaton (ThetaMater.M2) to account for among-locus rate variation when estimating $\theta$, as well as characterize the genomic landscape of rate variation. TThe posterior predictive simulator included in ThetaMater allows users to identify potential outlier loci from the genomic distribution of genetic variation, whether due to issues of orthology (see Step 7), or other violations of model assumptions, such as selection (see GppFST R package, Adams 2015). ThetaMater also includes several functions for simulating datasets under the neutral coalescent model. Briefly, datasets are simulated under the infinite-sites model of mutation according to the protocol discribed in Wakeley 2008 (pg. 255).
 
@@ -56,7 +56,7 @@ Users can estimate locus-specific $\theta$s for each locus within a dataset to c
 
 ## Step 0: Before running ThetaMater
 
-ThetaMater takes as input a variety of data types in the form of nucleotide alignments (fasta, phylip, nexus; see Step 2 below) to estimate population parameters from genetic and genomic data. Large, multi-sample and multilocus datasets as well as individual loci can be used with ThetaMater. Importantly, ThetaMater requires that all loci are quality-filtered and processed prior to parameter estimation. It is important that users ensure that the input data are of high quality (although the PPS can potentially help identify paralogs, See Step 7 below) and are in one of the commonly used formats discussed below (Step 2, although email the author at radams@uta.edu if additional formats are required). ThetaMater is not a 'magic box' that will instantly provide an estimate of population parameters from raw sequence data, and it is therefore imperative the users carefully evaluate quality of the input alignment data, the assumptions of the model (recombination, selection, etc.; see above discussion and Step 8), as well as the prior beliefs concerning these parameters (Step 3).
+ThetaMater takes as input a variety of data types in the form of nucleotide alignments (fasta, phylip, nexus; see Step 2 below) to estimate population parameters from genetic and genomic data. Large, multi-sample and multilocus datasets as well as individual loci can be used with ThetaMater. Importantly, ThetaMater requires that all loci are quality-filtered and processed prior to parameter estimation. It is important that users ensure that the input data are of high quality (although the PPS can potentially help identify paralogs, See Step 7 below) and are in one of the commonly used formats discussed below (Step 2, although email the author at radams@uta.edu if additional formats are required). ThetaMater is not a 'magic box' that will instantly provide an estimate of population parameters from raw sequence data, and it is therefore imperative the users carefully evaluate quality of the input alignment data, the assumptions of the model (recombination, selection, etc.; see above discussion and Step 8), as well as the prior beliefs concerning these parameters (Step 3). It is very important to make sure datasets are appropriately filtered, as it is reasonable that false singletons introduced by sequencing error may bias ThetaMater towards larger values. 
  
 
 ## Step 1: install R package ThetaMater from github
@@ -122,17 +122,17 @@ Below we read one of the example datasets used in this tutorial:
 data(example.dat,package= "ThetaMater")
 
 # Let's look at the data
-example.dat$k.vec # mutation counts
+example.dat$k.vec # number of segregating sites
 example.dat$l.vec # locus lengths
 example.dat$n.vec # number of samples
 example.dat$c.vec # number of observations (i.e., sum(example.dat$c.vec) = number of loci)
 ```
 
 For the remainder of the manual, we use the following notation in R:  
- * `k.vec`: vector containing the number of mutations observed per locus (collapsed into unique data patterns)  
+ * `k.vec`: vector containing the number of segregating sites observed per locus (collapsed into unique data patterns)  
  * `l.vec`: vector containing the number of sites per locus (i.e., locus length, collapsed into unique data patterns)  
  * `n.vec`: vector containing the number of samples per locus (i.e., number of gene copies per locus, collapsed into unique data patterns)  
- * `c.vec`: vector containing the unique data pattern counts (i.e., number of observations consisting of the same mutation count, locus length, and number of samples)  
+ * `c.vec`: vector containing the unique data pattern counts (i.e., number of observations consisting of the same number of segregating sites, locus length, and number of samples)  
 
 ```{r eval = TRUE}
 library(ThetaMater)
@@ -142,7 +142,7 @@ example.dat <- Read.AllelesFile(alleles.file = file.loc)
 ```
 
 Here, the object 'example.dat' returns a list with the following vectors:  
- * k.vec = vector of mutation counts  
+ * k.vec = vector containing the number of segregating sites per locus 
  * l.vec = vector of locus lengths  
  * n.vec = vector of sample counts  
  * c.vec = vector of unique pattern counts  
@@ -197,7 +197,7 @@ The shape and scale parameters can be set for $\alpha$ in a similar manner to re
 Here we will estimate Theta for the given dataset using ThetaMater.M1. The input arguments for the function `ThetaMater.M1` are as follows:
 
 `ThetaMater.M1(k.vec, l.vec, n.vec, c.vec, ngens, burnin, thin, theta.shape, theta.scale)`  
- * `k.vec`: vector of mutation counts  
+ * `k.vec`: vector of containing the number of segregating sites per locus 
  * `l.vec`: vector of locus lengths  
  * `n.vec`: vector of sample counts  
  * `c.vec`: vector of unique pattern counts  
@@ -301,7 +301,7 @@ plot(as.mcmc(example.locus10000.mcmc)) # 10000 loci
 Here we will estimate the posterior distribution of $\theta$ using a fixed $\alpha$ parameter describing the distribution of among-locus rate variation within our dataset. The input arguments for the function `ThetaMater.M2` are as follows:
 
 `ThetaMater.M2(k.vec, l.vec, n.vec, c.vec, alpha, K.classes, ngens, burnin, thin, theta.shape, theta.scale)`
- * `k.vec`: vector of mutation counts  
+ * `k.vec`: vector of containing the number of segregating sites per locus 
  * `l.vec`: vector of locus lengths  
  * `n.vec`: vector of sample counts  
  * `c.vec`: vector of unique pattern counts  
@@ -318,7 +318,7 @@ The following example data were simulated using $\theta$ = 0.002 and $\alpha$ = 
 ```{r eval = F}
 data(example.M2.dat, package= "ThetaMater")
 # Let's look at the data
-example.M2.dat$k.vec # mutation counts
+example.M2.dat$k.vec # vector of containing the number of segregating sites per locus 
 example.M2.dat$l.vec # locus lengths
 example.M2.dat$n.vec # number of samples
 example.M2.dat$c.vec # number of observations
@@ -364,7 +364,7 @@ Here we use `ThetaMater.M3` to estimate the joint posterior distribution of $\th
 The input arguments for the function `ThetaMater.M3` are as follows:  
 
 `ThetaMater.M3(k.vec, l.vec, n.vec, c.vec, alpha, K.classes, ngens, burnin, thin, theta.shape, theta.scale, alpha.shape, alpha.scale)`  
- * `k.vec`: vector of mutation counts  
+ * `k.vec`: vector of containing the number of segregating sites per locus  
  * `l.vec`: vector of locus lengths  
  * `n.vec`: vector of sample counts  
  * `c.vec`: vector of unique pattern counts  
@@ -382,7 +382,7 @@ Notice: here we will set the prior distributions for both $\theta$ and $\alpha$ 
 ```{r eval = F}
 data(example.M2.dat, package= "ThetaMater")
 # Let's look at the data
-example.M2.dat$k.vec # mutation counts
+example.M2.dat$k.vec # vector of containing the number of segregating sites per locus 
 example.M2.dat$l.vec # locus lengths
 example.M2.dat$n.vec # number of samples
 example.M2.dat$c.vec # number of observations
@@ -461,9 +461,9 @@ plot(h, colramp=rf, xlab = "Ne", ylab = "alpha")
 ```
 
 
-## Step 7: (Optional) conduct posterior predictive simulation to remove loci with evidence of unlikely mutation counts (i.e., potential paralogs)
+## Step 7: (Optional) conduct posterior predictive simulation to remove loci with evidence of unlikely numbers of obseved segregating sites (i.e., potential paralogs)
 
-Finally, we can leverage the posterior distribution of $\theta$ that is estimated by ThetaMater to simulate posterior predictive simulated (PPS) distributions of mutation counts (k.vec) using the function ThetaMater.PPS. We can leaverage this PPS distribution filter out loci with unexpected mutation counts, such as incorrectly assembled paralogous loci, which will result in greater than expected numbers of single-locus ‘mutations’. Additionally, PPS can be leveraged to identify outlier loci with unexpected mutation counts due to other evolutionary processes, such as selection. The commands for using the function ThetaMater.PPS are as follows:
+Finally, we can leverage the posterior distribution of $\theta$ that is estimated by ThetaMater to simulate posterior predictive simulated (PPS) distributions of the number of segregating sites (k.vec) using the function ThetaMater.PPS. We can leaverage this PPS distribution filter out loci with unexpected numbers of segregating sites, such as incorrectly assembled paralogous loci, which will result in greater than expected numbers of single-locus ‘number of segregating sites’. Additionally, PPS can be leveraged to identify outlier loci with unexpected numbers of segregating site counts due to other evolutionary processes, such as selection. The commands for using the function ThetaMater.PPS are as follows:
 
 
 `ThetaMater.PPS(theta.MCMC, l.vec, n.vec)`  
@@ -471,7 +471,7 @@ Finally, we can leverage the posterior distribution of $\theta$ that is estimate
  * `n.vec`: vector of sample counts  
  * `theta.MCMC`: Posterior distribution of theta inferred via ThetaMater
 
-In this example, the PPS (white) and the observed (gray) distribution overlap considerably, and thus there is no need to filter out loci based on mutation counts alone
+In this example, the PPS (white) and the observed (gray) distribution overlap considerably, and thus there is no need to filter out loci based on the number of segregating sites alone
 ```{r eval = T}
 data(example.dat,package= "ThetaMater")
 file.loc <- system.file("example.MCMC.M1.csv", package="ThetaMater")
@@ -484,7 +484,7 @@ hist(example.dat$k.vec, col="gray20",add=T, freq = F, breaks = 10)
 Now, in this next sample we have a simulated dataset in which 4 paralogous loci (out of 1000) have been erronously placed into the same alignment, because they were  assumed to be homologous. Using the code below, we will load the ‘example.SeqError.alles’ data into R and first estimate  using this unfiltered dataset.
  
 ```{r eval = T}
-# Let's look at the mutation count vector
+# Let's look at the vector of observed counts of segregating sites
 data(example.SeqError.alles,package= "ThetaMater")
 example.SeqError.alles$k.vec
 ```
@@ -508,7 +508,7 @@ hist(example.PPS.results, freq = T, breaks = 10, add = T)
 abline(v=6, col="red", lwd = 5)
 ```
 
-Here the red line shows the maximum number of mutations observed in the PPS data. So, let's remove the four extreme loci that are beyond this value and reestimate $\theta$ after filtering using this PPS distribution
+Here the red line shows the maximum number of segregating sites observed in the PPS data. So, let's remove the four extreme loci that are beyond this value and reestimate $\theta$ after filtering using this PPS distribution
 ```{r eval = T}
 max(example.PPS.results)
 example.Filtered <- FilterData.PPS(dataset = example.SeqError.alles, threshold = 6)
@@ -555,5 +555,30 @@ plot(as.mcmc(example.r7.MCMC))# 2e-7
 plot(as.mcmc(example.r8.MCMC))# 2e-8
 plot(as.mcmc(example.r9.MCMC))# 2e-9
 
+```
+
+## Step 9: Linkage & ThetaMater
+
+ThetaMater assumes that all loci are genetically unlinked (i.e., free recombination between loci). At the request of a reviewer, we conducted a simulation analysis to evaluate the effects of linkage on posterior estimates derived via ThetaMater. We simulated a sample of human chromosome 1 (length = 248,956,000bp) with three different recombination rates (2e-8, 2e-9, 2e-10) and a sample size of 10 individuals. We also simulated a single dataset without recombination at all (i.e., rho = 0, such that the entire chromosome was linked). We randomly sampled 100bp loci every 100kb, with resembles "reduced-representation" sampling, such as RADseq and sequence capture data. We used the following command in msprime: 
+`msprime.simulate(sample_size=10, Ne=10000, length=248956000, recombination_rate=rho, mutation_rate=2e-8)`
+The results of these analyses are plotted below for each recombination rate. We inlcuded a python script (SimulateChr1.v2.py) to generate these results. As you can see, in all cases with recombinatinon (rho = 2e-8, 2e-9, 2e-10), the posterior distribution of $\theta$ was centered near the true simulated value ($\theta$ = 0.0008), suggesting that ThetaMater is likely robust to linkage in these conditions. However, in the most extreme simulation in which rho = 0 (no recombination at all), we did find that ThetaMater was biased towards a larger value than the true simulated value. Under extreme scenarios of recombination (all loci are genetically linked), ThetaMater may be biased, but under realistic conditions, ThetaMater appears robust to linkage. These simulations are not necessarily conclusive for all scenarios, and we encourage users to explore all potential violations of the coalescent model prior to using ThetaMater (i.e., recombination, linkage, selection). If there is some concern for model violations, one can simulate datasets (as we have done with msprime) to explore other potential violations, including linkage and selection. 
+
+
+```{r eval = T}
+# load the data 
+data(Rh08.MCMC, package = "ThetaMater") # 2e-8
+data(Rh09.MCMC, package = "ThetaMater") # 2e-9
+data(Rh10.MCMC, package = "ThetaMater") # 2e-9
+data(Rh0.MCMC, package = "ThetaMater") # 0
+
+varnames(Rh08.MCMC) <- "theta"
+varnames(Rh09.MCMC) <- "theta"
+varnames(Rh10.MCMC) <- "theta"
+varnames(Rh0.MCMC) <- "theta"
+
+plot(as.mcmc(Rh08.MCMC))# 2e-8
+plot(as.mcmc(Rh09.MCMC))# 2e-9
+plot(as.mcmc(Rh10.MCMC))# 2e-9
+plot(as.mcmc(Rh0.MCMC))# 0
 ```
 

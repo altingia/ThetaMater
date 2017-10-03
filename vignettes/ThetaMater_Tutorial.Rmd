@@ -559,7 +559,7 @@ plot(as.mcmc(example.r9.MCMC))# 2e-9
 
 ## Step 9: Linkage & ThetaMater
 
-ThetaMater assumes that all loci are genetically unlinked (i.e., free recombination between loci). At the request of a reviewer, we conducted a simulation analysis to evaluate the effects of linkage on posterior estimates derived via ThetaMater. We simulated a sample of human chromosome 1 (length = 248,956,000bp) with three different recombination rates (2e-8, 2e-9, 2e-10) and a sample size of 10 individuals. We also simulated a single dataset without recombination at all (i.e., rho = 0, such that the entire chromosome was linked). We randomly sampled 100bp loci every 100kb, with resembles "reduced-representation" sampling, such as RADseq and sequence capture data. We used the following command in msprime: 
+ThetaMater assumes that all loci are genetically unlinked (i.e., free recombination between loci). At the request of a reviewer, we conducted a simulation analysis to evaluate the effects of linkage on posterior estimates derived via ThetaMater. We simulated a sample of human chromosome 1 (length = 248,956,000bp) with three different recombination rates (2e-8, 2e-9, 2e-10) and a sample size of 10 individuals. We also simulated a single dataset without recombination at all (i.e., rho = 0, such that the entire chromosome was linked). We randomly sampled 1000bp loci every 100kb, with resembles "reduced-representation" sampling, such as RADseq and sequence capture data. We used the following command in msprime: 
 `msprime.simulate(sample_size=10, Ne=10000, length=248956000, recombination_rate=rho, mutation_rate=2e-8)`
 The results of these analyses are plotted below for each recombination rate. We inlcuded a python script (SimulateChr1.v2.py) to generate these results. As you can see, in all cases with recombinatinon (rho = 2e-8, 2e-9, 2e-10), the posterior distribution of $\theta$ was centered near the true simulated value ($\theta$ = 0.0008), suggesting that ThetaMater is likely robust to linkage in these conditions. However, in the most extreme simulation in which rho = 0 (no recombination at all), we did find that ThetaMater was biased towards a larger value than the true simulated value. Under extreme scenarios of recombination (all loci are genetically linked), ThetaMater may be biased, but under realistic conditions, ThetaMater appears robust to linkage. These simulations are not necessarily conclusive for all scenarios, and we encourage users to explore all potential violations of the coalescent model prior to using ThetaMater (i.e., recombination, linkage, selection). If there is some concern for model violations, one can simulate datasets (as we have done with msprime) to explore other potential violations, including linkage and selection. 
 
@@ -578,7 +578,7 @@ varnames(Rh0.MCMC) <- "theta"
 
 plot(as.mcmc(Rh08.MCMC))# 2e-8
 plot(as.mcmc(Rh09.MCMC))# 2e-9
-plot(as.mcmc(Rh10.MCMC))# 2e-9
+plot(as.mcmc(Rh10.MCMC))# 2e-10
 plot(as.mcmc(Rh0.MCMC))# 0
 ```
 
